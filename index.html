@@ -123,7 +123,7 @@
             'F': ['蕭以若', '施姵妤', '林耿鋒', '游竣宇'],
             'G': ['陳怡瑄', '魏婉昀', '高嘉偉', '張祐綸'],
             'H': ['姜馨', '俞懷媃', '郭士偉', '洪華強'],
-            'I': ['Covia', '曾俐婕', '李志培', '林子慶'],
+            'I': ['Covia', '曾琍婕', '李志培', '林子慶'],
             'J': ['張采翎', '何蕙心', '彭于鈞', '王俊穎'],
             'K': ['魏子軒', '陳哲銘', '陳證元', 'Dennis']
         };
@@ -150,12 +150,13 @@
             { time: "11:09 - 11:26", phase: 1, A: { play: ['C','F','K'], split: 'F', ref: 'J' }, B: { play: ['D','H','J'], split: 'D', ref: 'E' } },
             { time: "11:26 - 11:43", phase: 1, A: { play: ['G','J','K'], split: 'J', ref: 'B' }, B: { play: ['E','I','A'], split: 'E', ref: 'F' } },
             { time: "11:43 - 12:00", phase: 1, A: { play: ['B','D','G'], split: 'B', ref: 'K' }, B: { play: ['C','F','H'], split: 'C', ref: 'I' } },
-            { time: "12:00 - 12:15", phase: 2, type: "warmup", desc: "第二階段 6打6 佈達與隊友相見歡" },
-            { time: "12:15 - 12:35", phase: 2, A: { play: ['A','B'], ref: 'C' }, B: { play: ['D','E'], ref: 'F' } },
-            { time: "12:35 - 12:55", phase: 2, A: { play: ['C','G'], ref: 'A' }, B: { play: ['F','B'], ref: 'D' } },
-            { time: "12:55 - 13:15", phase: 2, A: { play: ['D','A'], ref: 'G' }, B: { play: ['E','C'], ref: 'B' } },
-            { time: "13:15 - 13:35", phase: 2, A: { play: ['G','B'], ref: 'E' }, B: { play: ['F','A'], ref: 'C' } },
-            { time: "13:35 - 14:00", phase: 2, A: { play: ['C','D'], ref: 'F' }, B: { play: ['E','G'], ref: 'B' } }
+            { time: "12:00 - 12:17", phase: 1, A: { play: ['E','J','K'], split: 'K', ref: 'F' }, B: { play: ['A','C','D'], split: 'C', ref: 'H' } },
+            { time: "12:17 - 12:30", phase: 2, type: "break", desc: "中場休息、拍照時間" },
+            { time: "12:30 - 12:50", phase: 2, A: { play: ['A','B'], ref: 'E' }, B: { play: ['C','D'], ref: 'G' } },
+            { time: "12:50 - 13:10", phase: 2, A: { play: ['E','F'], ref: 'D' }, B: { play: ['C','G'], ref: 'B' } },
+            { time: "13:10 - 13:30", phase: 2, A: { play: ['D','E'], ref: 'F' }, B: { play: ['A','B'], ref: 'C' } },
+            { time: "13:30 - 13:50", phase: 2, A: { play: ['F','G'], ref: 'A' } },
+            { time: "13:50 - 14:00", phase: 2, type: "free", desc: "全場地自由時間" }
         ];
 
         // ==========================================
@@ -219,6 +220,12 @@
                 
                 if (slot.type === "warmup") {
                     return { title: slot.desc, desc: "請至場上集合", color: "bg-blue-100 text-blue-800 border-blue-300", icon: "fa-bullhorn", type: 'info' };
+                }
+                if (slot.type === "break") {
+                    return { title: slot.desc, desc: "全體適用", color: "bg-purple-100 text-purple-800 border-purple-300", icon: "fa-camera", type: 'info' };
+                }
+                if (slot.type === "free") {
+                    return { title: slot.desc, desc: "全體適用", color: "bg-green-100 text-green-800 border-green-300", icon: "fa-volleyball-ball", type: 'info' };
                 }
 
                 for (const court of ['A', 'B']) {
