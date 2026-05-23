@@ -445,6 +445,122 @@
                 );
             };
 
+            const renderAllScheduleTab = () => {
+                const p1Group = getPlayerGroup(selectedPlayer, 1);
+                const p2Group = getPlayerGroup(selectedPlayer, 2);
+
+                return (
+                    <div className="p-4 pb-24 animate-fade-in selectable">
+                        <h2 className="text-2xl font-black text-karasuno mb-6 flex items-center">
+                            <i className="fas fa-list-alt text-haikyu-500 mr-2"></i> 大會總賽程
+                        </h2>
+
+                        <div className="space-y-4">
+                            {scheduleData.map((slot, idx) => {
+                                const isPast = parseTime(slot.time.split(' - ')[1]) <= currentTime.getTime();
+                                const isActive = isCurrentTimeslot(slot.time);
+                                const pGroup = slot.phase === 1 ? p1Group : p2Group;
+
+                                const isMyCourtA = pGroup && slot.A && (slot.A.play.includes(pGroup) || slot.A.split === pGroup || slot.A.ref === pGroup);
+                                const isMyCourtB = pGroup && slot.B && (slot.B.play.includes(pGroup) || slot.B.split === pGroup || slot.B.ref === pGroup);
+
+                                return (
+                                    <div key={idx} className={`bg-white rounded-xl shadow-sm border-2 ${isActive ? 'border-haikyu-500 ring-2 ring-haikyu-200 scale-[1.02] transform transition-transform shadow-md' : 'border-gray-200'} overflow-hidden transition-opacity ${isPast && !isActive ? 'opacity-60 grayscale-[20%]' : ''}`}>
+                                        <div className={`${isActive ? 'bg-haikyu-500 text-white' : 'bg-gray-100 text-gray-700'} px-3 py-2 font-black text-sm flex justify-between items-center border-b ${isActive ? 'border-haikyu-600' : 'border-gray-200'}`}>
+                                            <span className="flex items-center">
+                                                <i className={`far fa-clock mr-1 ${isActive ? 'animate-pulse' : ''}`}></i> {slot.time}
+                                                {isActive && <span className="ml-2 bg-white text-haikyu-600 text-[10px] px-1.5 py-0.5 rounded font-black animate-bounce">NOW</span>}
+                                            </span>
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-haikyu-600 text-white border border-haikyu-400' : 'bg-gray-200 text-gray-600'}`}>Phase {slot.phase}</span>
+                                        </div>
+
+                                        <div className="p-3">
+                                            {slot.type ? (
+                                                <div className={`text-center font-bold py-3 rounded-lg ${slot.type === 'warmup' ? 'bg-blue-50 text-blue-700 border border-blue-100' : slot.type === 'break' ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                                                    <i className={`fas ${slot.type === 'warmup' ? 'fa-bullhorn' : slot.type === 'break' ? 'fa-camera' : 'fa-volleyball-ball'} mr-2 ${isActive ? 'animate-bounce' : ''}`}></i>
+                                                    {slot.desc}
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {/* A Court */}
+                                                    {slot.A && (
+                                                        <div className={`rounded-lg p-2 border relative overflow-hidden ${isMyCourtA ? 'border-haikyu-500 bg-yellow-50 shadow-sm ring-1 ring-haikyu-400' : 'bg-orange-50 border-orange-100'}`}>
+                                                            {isMyCourtA && <div className="absolute top-0 left-0 w-full h-1 bg-haikyu-500"></div>}
+                                                            <div className={`font-black text-xs mb-1.5 border-b pb-1 flex items-center ${isMyCourtA ? 'text-haikyu-700 border-haikyu-200' : 'text-orange-800 border-orange-200'}`}>
+                                                                <div className={`text-white w-4 h-4 flex items-center justify-center rounded text-[10px] mr-1 ${isMyCourtA ? 'bg-haikyu-500' : 'bg-orange-500'}`}>A</div>
+                                                                A 場地
+                                                                {isMyCourtA && <i className="fas fa-star text-yellow-500 ml-auto animate-pulse"></i>}
+                                                            </div>
+                                                            <div className="text-[11px] sm:text-xs font-bold text-gray-700 flex flex-col gap-1.5">
+                                                                <div>
+                                                                    <span className="text-gray-500 flex items-center mb-0.5"><i className="fas fa-fire text-orange-400 mr-1 w-3 text-center"></i>對戰:</span> 
+                                                                    <div className="text-karasuno leading-tight pl-4">
+                                                                        {slot.A.play.map((g, i) => {
+                                                                            const isMe = g === pGroup;
+                                                                            return <span key={g}><span onClick={() => openTeamModal(slot.phase, g)} className={`cursor-pointer underline ${isMe ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'hover:text-orange-600'}`}>{g}</span>{i < slot.A.play.length -1 ? '、' : ''}</span>
+                                                                        })}
+                                                                    </div>
+                                                                </div>
+                                                                {slot.A.split && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="text-gray-500 mr-1"><i className="fas fa-people-arrows text-red-400 mr-1 w-3 text-center"></i>拆分:</span> 
+                                                                        <span onClick={() => openTeamModal(slot.phase, slot.A.split)} className={`cursor-pointer underline ${slot.A.split === pGroup ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'text-red-600 hover:text-red-800'}`}>{slot.A.split}</span>
+                                                                    </div>
+                                                                )}
+                                                                {slot.A.ref && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="text-gray-500 mr-1"><i className="fas fa-clipboard-list text-blue-400 mr-1 w-3 text-center"></i>計分:</span> 
+                                                                        <span onClick={() => openTeamModal(slot.phase, slot.A.ref)} className={`cursor-pointer underline ${slot.A.ref === pGroup ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'text-blue-600 hover:text-blue-800'}`}>{slot.A.ref}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {/* B Court */}
+                                                    {slot.B && (
+                                                        <div className={`rounded-lg p-2 border relative overflow-hidden ${isMyCourtB ? 'border-haikyu-500 bg-yellow-50 shadow-sm ring-1 ring-haikyu-400' : 'bg-blue-50 border-blue-100'}`}>
+                                                            {isMyCourtB && <div className="absolute top-0 left-0 w-full h-1 bg-haikyu-500"></div>}
+                                                            <div className={`font-black text-xs mb-1.5 border-b pb-1 flex items-center ${isMyCourtB ? 'text-haikyu-700 border-haikyu-200' : 'text-blue-800 border-blue-200'}`}>
+                                                                <div className={`text-white w-4 h-4 flex items-center justify-center rounded text-[10px] mr-1 ${isMyCourtB ? 'bg-haikyu-500' : 'bg-blue-500'}`}>B</div>
+                                                                B 場地
+                                                                {isMyCourtB && <i className="fas fa-star text-yellow-500 ml-auto animate-pulse"></i>}
+                                                            </div>
+                                                            <div className="text-[11px] sm:text-xs font-bold text-gray-700 flex flex-col gap-1.5">
+                                                                <div>
+                                                                    <span className="text-gray-500 flex items-center mb-0.5"><i className="fas fa-fire text-orange-400 mr-1 w-3 text-center"></i>對戰:</span> 
+                                                                    <div className="text-karasuno leading-tight pl-4">
+                                                                        {slot.B.play.map((g, i) => {
+                                                                            const isMe = g === pGroup;
+                                                                            return <span key={g}><span onClick={() => openTeamModal(slot.phase, g)} className={`cursor-pointer underline ${isMe ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'hover:text-blue-600'}`}>{g}</span>{i < slot.B.play.length -1 ? '、' : ''}</span>
+                                                                        })}
+                                                                </div>
+                                                                </div>
+                                                                {slot.B.split && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="text-gray-500 mr-1"><i className="fas fa-people-arrows text-red-400 mr-1 w-3 text-center"></i>拆分:</span> 
+                                                                        <span onClick={() => openTeamModal(slot.phase, slot.B.split)} className={`cursor-pointer underline ${slot.B.split === pGroup ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'text-red-600 hover:text-red-800'}`}>{slot.B.split}</span>
+                                                                    </div>
+                                                                )}
+                                                                {slot.B.ref && (
+                                                                    <div className="flex items-center">
+                                                                        <span className="text-gray-500 mr-1"><i className="fas fa-clipboard-list text-blue-400 mr-1 w-3 text-center"></i>計分:</span> 
+                                                                        <span onClick={() => openTeamModal(slot.phase, slot.B.ref)} className={`cursor-pointer underline ${slot.B.ref === pGroup ? 'bg-yellow-300 text-black px-1 rounded font-black' : 'text-blue-600 hover:text-blue-800'}`}>{slot.B.ref}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            };
+
             const renderGroupsTab = () => (
                 <div className="p-4 pb-24 selectable animate-fade-in">
                     <h2 className="text-2xl font-black text-karasuno mb-6 flex items-center">
@@ -809,9 +925,10 @@
                 );
             };
 
-            // Tabs 設定
+            // Tabs 設定 (加入新 Tab)
             const tabs = [
                 { id: 'schedule', icon: 'fa-clipboard-user', label: '個人賽程' },
+                { id: 'all_schedule', icon: 'fa-list-alt', label: '總賽程表' },
                 { id: 'groups', icon: 'fa-users', label: '分組名單' },
                 { id: 'draw', icon: 'fa-random', label: '拆分抽籤' },
                 { id: 'info', icon: 'fa-book-open', label: '大會資訊' }
@@ -847,9 +964,10 @@
                         </div>
                     </header>
 
-                    {/* Main Content Area: 移除 overflow-y-auto 讓外層 body 自然滾動 */}
+                    {/* Main Content Area */}
                     <main className="flex-1 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pb-28">
                         {activeTab === 'schedule' && renderScheduleTab()}
+                        {activeTab === 'all_schedule' && renderAllScheduleTab()}
                         {activeTab === 'groups' && renderGroupsTab()}
                         {activeTab === 'draw' && renderDrawTab()}
                         {activeTab === 'info' && renderInfoTab()}
@@ -858,17 +976,17 @@
                     <ProfileModal />
                     <TeamModal />
 
-                    {/* Bottom Navigation: 修正 fixed 定位，讓其不受父層影響 */}
+                    {/* Bottom Navigation */}
                     <nav className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg bg-white border-t border-gray-200 flex justify-around items-center pb-safe z-40 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.15)]">
                         {tabs.map(tab => (
                             <button 
                                 key={tab.id}
                                 onClick={() => window.scrollTo(0,0) || setActiveTab(tab.id)}
-                                className={`flex flex-col items-center py-2.5 w-1/4 transition-all relative ${activeTab === tab.id ? 'text-haikyu-500 bg-orange-50/50' : 'text-gray-400 hover:text-gray-600 active:bg-gray-50'}`}
+                                className={`flex flex-col items-center py-2.5 w-1/5 transition-all relative ${activeTab === tab.id ? 'text-haikyu-500 bg-orange-50/50' : 'text-gray-400 hover:text-gray-600 active:bg-gray-50'}`}
                             >
                                 {activeTab === tab.id && <div className="absolute top-0 w-3/4 h-1 bg-haikyu-500 rounded-b-md shadow-[0_2px_4px_rgba(249,105,0,0.3)] animate-smash"></div>}
                                 <i className={`fas ${tab.icon} text-xl mb-1 ${activeTab === tab.id ? 'animate-bounce mt-1 text-haikyu-600' : 'mt-1'}`}></i>
-                                <span className="text-[10px] font-black tracking-widest">{tab.label}</span>
+                                <span className="text-[10px] font-black tracking-widest whitespace-nowrap">{tab.label}</span>
                             </button>
                         ))}
                     </nav>
